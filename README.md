@@ -17,6 +17,35 @@ You can have others container registry, here we are using Docker Hub Registry. T
 
 ```console
 docker login -u <your_dockerhub_username> && \
-docker tag app-test:<your_tag_version> igoritosousa22/app-test:<your_tag_version> && \
-docker push igoritosousa22/app-test:<your_tag_version>
+docker tag app-test:<your_tag_version> igoritosousa22/app-test:<tag_version> && \
+docker push igoritosousa22/app-test:<tag_version>
+```
+### Deploy on Kubernetes
+
+To deploy this app on Kubernetes, first create a manifest deploy passing the URL container registry on the image entry:
+```yaml
+#path: infra/app-test/yaml/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-app-test
+  labels:
+    app: go-app-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-app-test
+  template:
+    metadata:
+      labels:
+        app: go-app-test
+    spec:
+      containers:
+        - name: go-app-test
+          image: docker.io/igoritosousa22/app-test:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
 ```
