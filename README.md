@@ -49,3 +49,35 @@ spec:
             - containerPort: 8080
               protocol: TCP
 ```
+
+### Create a Helm Chart for app-test
+
+First, you must create the app-test files and directories. Then, run:
+```console
+helm create app-test
+```
+
+So, the directory app-test will be created with some other files, Let's see one of them:
+
+  * charts - where the dependencies stored
+  * templates - is where the templates for Deployments, Services, ConfigMap, etc are stored.
+  * .helmignore - files that will bem ignore in process. Like dockerignore or gitignore file.
+  * Chart.yaml - is where are defined informations about Chart
+  * values.yaml - defines the values that will be used by templates for yor chart.
+
+Let's run the chart:
+
+```console
+helm install app-test go/app-test/
+```
+
+If all works, you must see the output like these:
+```console
+NAME: app-test
+LAST DEPLOYED: Sun Mar 20 16:17:01 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+
