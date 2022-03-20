@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-app-test
+  name: {{.Values.name}}
   labels:
-    app: go-app-test
+    app: {{.Values.name}}
 spec:
-  replicas: 1
+  replicas: {{.Values.deployment.replicas}}
   selector:
     matchLabels:
-      app: go-app-test
+      app: {{.Values.name}}
   template:
     metadata:
       labels:
-        app: go-app-test
+        app: {{.Values.name}}
     spec:
       containers:
-        - name: go-app-test
-          image: docker.io/igoritosousa22/app-test:1.0.0
+        - name: {{.Values.name}}
+          image: {{.Values.deployment.image}}:{{.Values.deployment.tag}}
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: {{.Values.deployment.containerPort}}
               protocol: TCP
