@@ -5,13 +5,19 @@ import (
 	"net/http"
 )
 
-func ItsWorks(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "This apps works!!")
+func ItsWorksOnV1(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "This apps works!! - Version 1!")
+
+}
+
+func ItsWorksOnV2(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "This apps works on  - Version 2!")
 
 }
 
 func main() {
-	http.HandleFunc("/v1", ItsWorks)
+	http.HandleFunc("/v1", ItsWorksOnV1)
+	http.HandleFunc("/v2", ItsWorksOnV2)
 
 	http.ListenAndServe(":8080", nil)
 }

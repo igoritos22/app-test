@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: go-app-test
-          image: docker.io/igoritosousa22/app-test:1.0.0
+          image: docker.io/igoritosousa22/app-test:2.0.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
