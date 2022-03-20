@@ -80,4 +80,147 @@ STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 ```
+### Using values.yaml
+
+The helm charts allow you customize templates to apply your deployments. So, we will pass the values of our deployment in the values.yaml file. Firts edit the template/deployment.yaml with the placeholder values: **{{.Value}}**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.name}}
+  labels:
+    app: {{.Values.name}}
+spec:
+  replicas: {{.Values.deployment.replicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.name}}
+    spec:
+      containers:
+        - name: {{.Values.name}}
+          image: {{.Values.deployment.image}}:{{.Values.deployment.tag}}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{.Values.deployment.containerPort}}
+              protocol: TCP
+```
+
+So, define the deployment values in the values.yaml:
+
+```yaml
+name: app-test
+deployment:
+  replicas: 2
+  image: docker.io/igoritosousa22/app-test
+  tag: 2.0.0
+  containerPort: 8080
+```
+
+To see what will be deployed, run this command:
+
+```console
+helm template app-test go/app-test/ --debug
+```
+
+
+Apply the release running the command above
+
+```console
+helm install app-test go/app-test/
+```
+
+And, If all it works, you should see something like these:
+```console
+NAME: app-test
+LAST DEPLOYED: Sun Mar 20 16:40:56 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+
+You can verify if the deployment is running on cluster:
+
+```console
+$ kubectl get pods 
+
+NAME                        READY   STATUS    RESTARTS   AGE
+app-test-6b5d567b89-gsl6j   1/1     Running   0          14m
+app-test-6b5d567b89-xzhwf   1/1     Running   0          14m
+```
+
+### Upgrade Chart
+
+So, Let's create a service to expose our deployment on templates/service.yaml:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-{{.Values.name}}
+spec:
+  ports:
+    - name: http
+      port: {{.Values.service.port}}
+  selector:
+    app: {{.Values.name}}
+```
+
+Then, run:
+```console
+helm template app-test go/app-test/ --debug
+```
+
+If the output works fine and don't show any errors, upgrade your release
+```console
+helm upgrade app-test go/app-test/
+```
+
+Now you should see that que value of REVISION change:
+
+```console
+NAME: app-test
+LAST DEPLOYED: Sun Mar 20 17:05:21 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 2
+TEST SUITE: None
+````
+
+Let's see if the service was created in the cluster:
+```console
+$ kubectl get svc
+NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+svc-app-test   ClusterIP   172.20.190.114   <none>        80/TCP    2m1s
+```
+
+Expose the service to test locally the app-test
+```console
+kubectl port-forward svc/svc-app-test 8080:8080
+```
+
+Test the app-test with a HTTP request
+```console
+curl -v http://localhost:8080/v2
+
+(...)
+< Content-Type: text/plain; charset=utf-8
+< 
+* Connection #0 to host localhost left intact
+This apps works on  - Version 2!
+```
+
+To clean-up the release, just run:
+```console
+helm uninstall app-test go/app-test/
+```
+
+### References
+https://medium.com/geekculture/helm-in-kubernetes-part-2-how-to-create-a-simple-helm-chart-af899fc2741d
+
 
