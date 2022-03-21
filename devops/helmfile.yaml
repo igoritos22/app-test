@@ -1,6 +1,0 @@
----
-releases:
-
-  - name: app-test
-    chart: ./app-test
-    installed: false

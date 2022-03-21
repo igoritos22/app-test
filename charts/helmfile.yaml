@@ -1,0 +1,10 @@
+---
+repositories: 
+  - name: app-test
+    url: https://github.com/igoritos22/app-test
+
+releases:
+
+  - name: app-test
+    chart: devops/app-test
+    installed: true
